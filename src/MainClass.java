@@ -2,6 +2,7 @@ import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.Semaphore;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class MainClass {
     public static final int CARS_COUNT = 4;
@@ -9,6 +10,7 @@ public class MainClass {
         final CountDownLatch cd = new CountDownLatch(CARS_COUNT);
         final CyclicBarrier cb = new CyclicBarrier(CARS_COUNT + 1);
         final Semaphore sm = new Semaphore(CARS_COUNT / 2);
+        AtomicBoolean win = new AtomicBoolean(true);
 
         System.out.println("ВАЖНОЕ ОБЪЯВЛЕНИЕ >>> Подготовка!!!");
         Race race = new Race(new Road(60), new Tunnel(), new Road(40));
@@ -26,6 +28,10 @@ public class MainClass {
                     e.printStackTrace();
                 }
                 cars[w].run();
+                if (win.get()) {
+                    System.out.println(cars[w].getName() + " - WIN!!!");
+                    win.set(false);
+                }
                 cd.countDown();
             }).start();
         }
